@@ -26,7 +26,7 @@ while true; do
         echo "Login esuat."
       fi
       read -p "Apasa Enter pentru a reveni la meniu..." ;;
-    3) source "$BASE_DIR/logout.sh"
+    3) source "$BASE_DIR/delete_user.sh"
        read -p "Apasa Enter pentru a reveni la meniu..." ;;
     4) source "$BASE_DIR/generate_report.sh"
        read -p "Apasa Enter pentru a reveni la meniu..." ;;
