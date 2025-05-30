@@ -1,31 +1,44 @@
 #!/bin/bash
 
+# Determinăm directorul în care se află acest script
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 USERS_FILE="$SCRIPT_DIR/users.csv"
 HOME_BASE="$SCRIPT_DIR/home"
 
+# Citire date
 read -p "Nume utilizator: " username
-read -s -p "Parola: " password
+read -s -p "Parolă: " password
 echo
 
-# Verificare existenta in users.csv
+# Verificare existență în users.csv
 if ! grep -q "^$username," "$USERS_FILE"; then
     echo "Utilizator inexistent!"
     exit 1
 fi
 
+# Hash parola introdusă
 hashed_pass=$(echo -n "$password" | sha256sum | awk '{print $1}')
 
-user_line=$(grep "^$username," "$USERS_FILE")
-stored_hash=$(echo "$user_line" | cut -d',' -f3)
+# Extragem hash-ul stocat
+stored_hash=$(grep "^$username," "$USERS_FILE" | cut -d',' -f3)
 
-if [[ "$hashed_pass" == "$stored_hash" ]]; then
-    uuid=$(echo "$user_line" | cut -d',' -f4)
-    current_time=$(date +"%Y-%m-%d %H:%M:%S")
-    sed -i "s|^$username,\([^,]*\),\([^,]*\),$uuid,[^,]*|$username,\1,\2,$uuid,$current_time|" "$USERS_FILE"
-    export username
-    exit 0
-else
-    echo "Parola gresita!"
+if [ "$hashed_pass" != "$stored_hash" ]; then
+    echo "Parolă incorectă!"
     exit 1
 fi
+
+
+USER_HOME="$HOME_BASE/$username"
+if [ ! -d "$USER_HOME" ]; then
+    echo "Nu există directorul home pentru $username!"
+    exit 1
+fi
+cd "$USER_HOME"
+
+echo "Bine ai venit, $username!"
+
+
+sed -i "/^$username,/s/[^,]*$/$(date)/" "$USERS_FILE"
+
+
+echo "$username autentificat"
