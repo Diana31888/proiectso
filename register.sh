@@ -6,7 +6,7 @@ HOME_BASE="$SCRIPT_DIR/home"
 
 read -p "Introdu numele de utilizator: " username
 
-# Verificare existenta utilizator
+
 if grep -q "^$username," "$USERS_FILE"; then
     echo "Utilizatorul deja exista!"
     return
@@ -32,7 +32,7 @@ echo "$username,$email,$hashed_pass,$id,NEVER" >> "$USERS_FILE"
 
 echo "Contul a fost creat cu succes!"
 
-# Simulare trimitere email
+
 (
     echo "To: $email"
     echo "From: proiect.so78@gmail.com"
