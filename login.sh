@@ -1,25 +1,21 @@
 #!/bin/bash
 
-# Determinăm directorul în care se află acest script
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 USERS_FILE="$SCRIPT_DIR/users.csv"
 HOME_BASE="$SCRIPT_DIR/home"
 
-# Citire date
 read -p "Nume utilizator: " username
 read -s -p "Parolă: " password
 echo
 
-# Verificare existență în users.csv
 if ! grep -q "^$username," "$USERS_FILE"; then
     echo "Utilizator inexistent!"
     exit 1
 fi
 
-# Hash parola introdusă
 hashed_pass=$(echo -n "$password" | sha256sum | awk '{print $1}')
 
-# Extragem hash-ul stocat
 stored_hash=$(grep "^$username," "$USERS_FILE" | cut -d',' -f3)
 
 if [ "$hashed_pass" != "$stored_hash" ]; then
